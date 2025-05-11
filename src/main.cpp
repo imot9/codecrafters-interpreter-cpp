@@ -4,6 +4,9 @@
 #include <sstream>
 #include <string>
 
+void run(const std::string&);
+void run_file(const std::string&, const std::string&);
+void run_prompt();
 std::string read_file_contents(const std::string& filename);
 
 int main(int argc, char *argv[]) {
@@ -11,21 +14,40 @@ int main(int argc, char *argv[]) {
     std::cout << std::unitbuf;
     std::cerr << std::unitbuf;
 
-    if (argc < 3) {
-        std::cerr << "Usage: ./your_program tokenize <filename>" << std::endl;
-        return 1;
-    }
-
-    const std::string command = argv[1];
-
-    if (command == "tokenize") {
-        std::string file_contents = read_file_contents(argv[2]);
+    // Interactive mode
+    if (argc == 1) {
+        run_prompt();
+        return 0;
+    // File handling
     } else {
-        std::cerr << "Unknown command: " << command << std::endl;
-        return 1;
+        run_file(argv[1], argv[2]);
     }
 
     return 0;
+}
+
+void run(const std::string& source) {
+    std::cout << source << std::endl;
+}
+
+void run_file(const std::string& command, const std::string& path) {
+    if (command == "tokenize") {
+        std::string file_contents = read_file_contents(path);
+        run(file_contents);
+    } else {
+        std::cerr << "Unknown command: " << command << std::endl;
+    }
+}
+
+void run_prompt() {
+    std::string line;
+
+    for (;;) {
+        std::cout << "> ";
+        std::cin >> line;
+        if (line == "") { break; }
+        run(line);
+    }
 }
 
 std::string read_file_contents(const std::string& filename) {
