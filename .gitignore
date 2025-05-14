@@ -56,3 +56,6 @@ vcpkg_installed
 
 # Test
 test.lox
+
+# Other
+.vscode
