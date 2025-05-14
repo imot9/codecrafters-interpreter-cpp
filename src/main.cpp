@@ -1,3 +1,5 @@
+#include "Scanner.hpp"
+
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -26,8 +28,13 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void run(const std::string& source) {
-    std::cout << source << std::endl;
+void run(std::string& source) {
+    Scanner* scanner = new Scanner(source);
+    scanner->scan_tokens();
+
+    for (auto token : scanner->tokens) {
+        std::cout << token << std::endl;
+    }
 }
 
 void run_file(const std::string& command, const std::string& path) {
