@@ -20,6 +20,7 @@ public:
 
     void string();
     void number();
+    void identifier();
 
     char advance();
     char peek();
@@ -27,4 +28,6 @@ public:
     bool match(char);
     bool is_at_end();
     bool is_digit(char);
+    bool is_alpha(char);
+    bool is_alphanumeric(char);
 };
