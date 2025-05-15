@@ -43,7 +43,7 @@ void Scanner::scan_token() {
 
         case '/':
             if (this->match('/')) {
-                while (this->peek() != '\n' && !this->is_at_end());
+                while (this->peek() != '\n' && !this->is_at_end()) this->advance();
             } else {
                 this->add_token(TokenType::SLASH);
             }
