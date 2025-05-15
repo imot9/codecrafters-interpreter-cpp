@@ -1,16 +1,16 @@
 #include "Token.hpp"
 
 #include <string>
-#include <list>
+#include <vector>
 
 class Scanner {
 public:
     Scanner(const std::string&);
-    std::list<Token> scan_tokens();
+    std::vector<Token> scan_tokens();
 
 private:
     const std::string& source;
-    std::list<Token> tokens;
+    std::vector<Token> tokens;
     int start;
     int current;
     int line;

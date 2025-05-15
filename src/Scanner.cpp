@@ -8,7 +8,7 @@
 Scanner::Scanner(const std::string& source)
     : source(source), tokens(), start(0), current(0), line(1) { }
 
-std::list<Token> Scanner::scan_tokens() {
+std::vector<Token> Scanner::scan_tokens() {
     while (!is_at_end()) {
         start = current;
         this->scan_token();
