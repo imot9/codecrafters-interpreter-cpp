@@ -18,10 +18,6 @@ std::vector<Token> Scanner::scan_tokens() {
     return tokens;
 }
 
-bool Scanner::is_at_end() {
-    return this->current >= this->source.length();
-}
-
 void Scanner::scan_token() {
     char c = this->advance();
     switch (c) {
@@ -75,25 +71,6 @@ void Scanner::scan_token() {
     }
 }
 
-char Scanner::advance() {
-    return this->source.at(current++);
-}
-
-char Scanner::peek() {
-    if (this->is_at_end()) {
-        return '\0';
-    }
-    return source.at(current);
-}
-
-char Scanner::peek_next() {
-    if (current + 1 >= this->source.length()) {
-        return '\0';
-    }
-
-    return source.at(current + 1);
-}
-
 void Scanner::add_token(TokenType type) {
     this->add_token(type, std::string_view());
 }
@@ -101,6 +78,10 @@ void Scanner::add_token(TokenType type) {
 void Scanner::add_token(TokenType type, std::variant<std::string_view, float> literal) {
     std::string_view text = std::string_view(this->source).substr(start, current - start);
     this->tokens.push_back(Token(type, text, literal, line));
+}
+
+char Scanner::advance() {
+    return this->source.at(current++);
 }
 
 bool Scanner::match(char expected) {
@@ -161,14 +142,33 @@ void Scanner::identifier() {
     this->add_token(type);
 }
 
-bool Scanner::is_digit(char c) {
+char Scanner::peek() const {
+    if (this->is_at_end()) {
+        return '\0';
+    }
+    return source.at(current);
+}
+
+char Scanner::peek_next() const {
+    if (current + 1 >= this->source.length()) {
+        return '\0';
+    }
+
+    return source.at(current + 1);
+}
+
+bool Scanner::is_at_end() const {
+    return this->current >= this->source.length();
+}
+
+bool Scanner::is_digit(char c) const {
     return c >= '0' && c <= '9';
 }
 
-bool Scanner::is_alpha(char c) {
+bool Scanner::is_alpha(char c) const {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 }
 
-bool Scanner::is_alphanumeric(char c) {
+bool Scanner::is_alphanumeric(char c) const {
     return this->is_alpha(c) || this->is_digit(c);
 }

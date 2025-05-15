@@ -24,11 +24,12 @@ private:
     void identifier();
 
     char advance();
-    char peek();
-    char peek_next();
     bool match(char);
-    bool is_at_end();
-    bool is_digit(char);
-    bool is_alpha(char);
-    bool is_alphanumeric(char);
+
+    char peek() const;
+    char peek_next() const;
+    bool is_at_end() const;
+    bool is_digit(char) const;
+    bool is_alpha(char) const;
+    bool is_alphanumeric(char) const;
 };
