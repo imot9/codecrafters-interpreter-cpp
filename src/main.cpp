@@ -33,8 +33,8 @@ int main(int argc, char *argv[]) {
 }
 
 void run(std::string& source) {
-    Scanner* scanner = new Scanner(source);
-    std::list<Token> tokens = scanner->scan_tokens();
+    Scanner scanner(source);
+    std::list<Token> tokens = scanner.scan_tokens();
 
     for (auto token : tokens) {
         std::cout << token << std::endl;
