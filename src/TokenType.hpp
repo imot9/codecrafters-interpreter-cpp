@@ -1,3 +1,6 @@
+#include <map>
+#include <string>
+
 enum TokenType {
     // Single-character tokens
     LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
@@ -63,3 +66,22 @@ inline const char* token_type_to_string(TokenType type) {
         default: return "UNKNOWN";
     }
 }
+
+inline static std::map<std::string, TokenType> keywords = {
+    { "and",    TokenType::AND },
+    { "class",  TokenType::CLASS },
+    { "else",   TokenType::ELSE } ,
+    { "false",  TokenType::FALSE },
+    { "for",    TokenType::FOR },
+    { "fun",    TokenType::FUN },
+    { "if",     TokenType::IF },
+    { "nil",    TokenType::NIL },
+    { "or",     TokenType::OR },
+    { "print",  TokenType::PRINT },
+    { "return", TokenType::RETURN },
+    { "super",  TokenType::SUPER },
+    { "this",   TokenType::THIS },
+    { "true",   TokenType::TRUE },
+    { "var",    TokenType::VAR },
+    { "while",  TokenType::WHILE },
+};

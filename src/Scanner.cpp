@@ -150,7 +150,15 @@ void Scanner::number() {
 
 void Scanner::identifier() {
     while(this->is_alphanumeric(this->peek())) this->advance();
-    this->add_token(TokenType::IDENTIFIER);
+
+    std::string text = source.substr(this->start, this->current - this->start);
+    TokenType type = TokenType::IDENTIFIER;
+
+    try {
+        type = keywords.at(text);
+    } catch (std::out_of_range) {}
+
+    this->add_token(type);
 }
 
 bool Scanner::is_digit(char c) {
