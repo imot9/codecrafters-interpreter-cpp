@@ -1,4 +1,5 @@
 #include "Scanner.hpp"
+#include "Lox.hpp"
 
 #include <list>
 #include <string.h>
@@ -58,7 +59,9 @@ void Scanner::scan_token() {
             break;
 
         default:
-            std::cout << "Unexpected character: " << c << std::endl;
+            std::string err_msg = std::string("Unexpected character: ");
+            err_msg.push_back(c);
+            Lox::error(line, err_msg);
             break;
     }
 }

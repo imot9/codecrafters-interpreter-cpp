@@ -1,10 +1,10 @@
 #include "Scanner.hpp"
+#include "Lox.hpp"
 
 #include <cstring>
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <string>
 
 void run(const std::string&);
 void run_file(const std::string&, const std::string&);
@@ -23,6 +23,10 @@ int main(int argc, char *argv[]) {
     // File handling
     } else {
         run_file(argv[1], argv[2]);
+    }
+
+    if (Lox::had_error) {
+        exit(65);
     }
 
     return 0;
