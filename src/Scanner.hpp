@@ -17,6 +17,9 @@ public:
     void scan_token();
     void add_token(TokenType);
     void add_token(TokenType, const std::string_view);
+
+    void string();
+
     char advance();
     char peek();
     bool match(char);

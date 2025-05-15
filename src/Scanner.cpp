@@ -53,6 +53,9 @@ void Scanner::scan_token() {
         case '\r':
         case '\t':
             break;
+        case '"':
+            this->string();
+            break;
 
         case '\n':
             line++;
@@ -96,4 +99,24 @@ bool Scanner::match(char expected) {
 
     current++;
     return true;
+}
+
+void Scanner::string() {
+    while (this->peek() != '"' && !this->is_at_end()) {
+        if (this->peek() == '\n') {
+            line++;
+        }
+        this->advance();
+    }
+
+    if (this->is_at_end()){
+        Lox::error(line, "Unterminated string.");
+        return;
+    }
+
+    // Closing "
+    this->advance();
+
+    std::string_view value = std::string_view(this->source).substr(this->start + 1, (this->current - 1) - (this->start + 1));
+    add_token(TokenType::STRING, value);
 }
