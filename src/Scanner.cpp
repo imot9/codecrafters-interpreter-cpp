@@ -5,7 +5,7 @@
 #include <string.h>
 #include <iostream>
 
-Scanner::Scanner(std::string& source)
+Scanner::Scanner(const std::string& source)
     : source(source), tokens(), start(0), current(0), line(1) { }
 
 std::list<Token> Scanner::scan_tokens() {
