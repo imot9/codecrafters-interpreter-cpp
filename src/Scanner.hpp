@@ -16,12 +16,15 @@ public:
     std::list<Token> scan_tokens();
     void scan_token();
     void add_token(TokenType);
-    void add_token(TokenType, const std::string_view);
+    void add_token(TokenType, const std::variant<std::string_view, float>);
 
     void string();
+    void number();
 
     char advance();
     char peek();
+    char peek_next();
     bool match(char);
     bool is_at_end();
+    bool is_digit(char);
 };

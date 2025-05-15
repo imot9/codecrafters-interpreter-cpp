@@ -62,9 +62,13 @@ void Scanner::scan_token() {
             break;
 
         default:
-            std::string err_msg = std::string("Unexpected character: ");
-            err_msg.push_back(c);
-            Lox::error(line, err_msg);
+            if (this->is_digit(c)) {
+                this->number();
+            } else {
+                std::string err_msg = std::string("Unexpected character: ");
+                err_msg.push_back(c);
+                Lox::error(line, err_msg);
+            }
             break;
     }
 }
@@ -80,11 +84,19 @@ char Scanner::peek() {
     return source.at(current);
 }
 
+char Scanner::peek_next() {
+    if (current + 1 >= this->source.length()) {
+        return '\0';
+    }
+
+    return source.at(current + 1);
+}
+
 void Scanner::add_token(TokenType type) {
     this->add_token(type, std::string_view());
 }
 
-void Scanner::add_token(TokenType type, std::string_view literal) {
+void Scanner::add_token(TokenType type, std::variant<std::string_view, float> literal) {
     std::string_view text = std::string_view(this->source).substr(start, current - start);
     this->tokens.push_back(Token(type, text, literal, line));
 }
@@ -119,4 +131,21 @@ void Scanner::string() {
 
     std::string_view value = std::string_view(this->source).substr(this->start + 1, (this->current - 1) - (this->start + 1));
     add_token(TokenType::STRING, value);
+}
+
+bool Scanner::is_digit(char c) {
+    return c >= '0' && c <= '9';
+}
+
+void Scanner::number() {
+    while(this->is_digit(this->peek())) this->advance();
+
+    if (this->peek() == '.' && this->is_digit(this->peek_next())) {
+        // Consume '.'
+        this->advance();
+
+        while(this->is_digit(this->peek())) this->advance();
+    }
+
+    this->add_token(TokenType::NUMBER, std::stof(this->source.substr(this->start, this->current - this->start)));
 }
