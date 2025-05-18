@@ -13,10 +13,10 @@ def main():
         exit(64)
 
     types : List[str] = [ 
-            "Binary   : Expr& left, Token& op, Expr& right",
-            "Grouping : Expr& expression",
+            "Binary   : Expr* left, Token* op, Expr* right",
+            "Grouping : Expr* expression",
             "Literal  : !!variant_string_view-float value", # std::variant<std::string_view, float> kind of messes up the splitting, will subst. later
-            "Unary    : Token& op, Expr& right"
+            "Unary    : Token* op, Expr* right"
         ]
 
     define_ast(sys.argv[1], "Expr", types)
@@ -30,8 +30,22 @@ def define_ast(output_dir : str, base_name : str, types : List[str]):
     f.write('#include <string_view>\n')
     f.write('#include <variant>\n\n')
 
+    # Forward declaration of Expressions
+    for _type in types:
+        f.write("class {};\n".format(_type.split(":")[0].strip()))
+
+    f.write("\n")
+
+    # Visitor class
+    define_visitor(f, base_name, types)
+
     # Base class
-    f.write("class {} {{}};\n\n".format(base_name))
+    f.write("class {} {{\n".format(base_name))
+    f.write("public:\n")
+    f.write("\tvirtual ~Expr() = default;\n")
+    f.write("\tvirtual std::string accept(Visitor& visitor) const = 0;\n")
+    f.write("};\n\n")
+
 
     # AST classes
     for _type in types:
@@ -77,10 +91,13 @@ def define_type(f : TextIOWrapper, class_name : str, base_name : str, fields : s
             f.write(", ")
 
     # Constructor - close
-    f.write(" {}\n\n")
+    f.write(" {}\n")
 
-    # Private
-    f.write("private:\n")
+    # Accept method
+    f.write("\tstd::string accept(Visitor& visitor) const override {{ return visitor.visit{}(*this); }}\n\n".format(class_name + base_name))
+
+    # Private - TODO is this needed?
+    # f.write("private:\n")
 
     # Variables
     for field in fields_list:
@@ -94,6 +111,19 @@ def define_type(f : TextIOWrapper, class_name : str, base_name : str, fields : s
 
     # Class - close
     f.write("};\n\n")
+
+def define_visitor(f : TextIOWrapper, base_name : str, types : List[str]):
+    f.write("class Visitor {\n")
+    f.write("public:\n")
+
+    for _tpye_num, _type in enumerate(types):
+        type_name : str = _type.split(":")[0].strip()
+        f.write("\tvirtual std::string visit{}(const {}& {}) = 0;".format(type_name + base_name, type_name, base_name.lower()))
+
+        if _tpye_num != len(types) - 1:
+            f.write("\n")
+
+    f.write("\n};\n\n")
 
 if __name__ == "__main__":
     main()
