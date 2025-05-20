@@ -17,7 +17,7 @@ private:
 
     void scan_token();
     void add_token(TokenType);
-    void add_token(TokenType, const std::variant<std::string_view, float>);
+    void add_token(TokenType, const std::string_view);
 
     void string();
     void number();
