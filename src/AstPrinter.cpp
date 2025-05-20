@@ -1,6 +1,8 @@
 #include "AstPrinter.hpp"
 
 #include <sstream>
+#include <iomanip>
+#include <cmath>
 
 std::string AstPrinter::print(const Expr& expr) {
     return expr.accept(*this);
@@ -18,7 +20,22 @@ std::string AstPrinter::visitGroupingExpr(const Grouping& expr)
 
 std::string AstPrinter::visitLiteralExpr(const Literal& expr)
 {
-    return std::string("literal");
+    if (expr.value.empty()) {
+        return "nil";
+    }
+    
+    try {
+        float num = std::stof(std::string(expr.value));
+        std::stringstream ss;
+        if (num == std::floor(num)) {
+            ss << std::fixed << std::setprecision(1) << num;
+        } else {
+            ss << expr.value;
+        }
+        return ss.str();
+    } catch (const std::invalid_argument&) {
+        return "\"" + std::string(expr.value) + "\"";
+    }
 }
 
 std::string AstPrinter::visitUnaryExpr(const Unary& expr)

@@ -1,7 +1,7 @@
 #include "Scanner.hpp"
+#include "AstPrinter.hpp"
 #include "Lox.hpp"
 
-#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -45,6 +45,8 @@ void run_file(const std::string& command, const std::string& path) {
     if (command == "tokenize") {
         std::string file_contents = read_file_contents(path);
         run(file_contents);
+    } else if (command == "parse") {
+        /* TODO */
     } else {
         std::cerr << "Unknown command: " << command << std::endl;
     }
