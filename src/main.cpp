@@ -1,4 +1,5 @@
 #include "Scanner.hpp"
+#include "Parser.hpp"
 #include "AstPrinter.hpp"
 #include "Lox.hpp"
 
@@ -6,7 +7,8 @@
 #include <iostream>
 #include <sstream>
 
-void run(const std::string&);
+void run_tokenize(const std::string&);
+void run_parse(const std::string&);
 void run_file(const std::string&, const std::string&);
 void run_prompt();
 std::string read_file_contents(const std::string& filename);
@@ -32,7 +34,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void run(std::string& source) {
+void run_tokenize(std::string& source) {
     Scanner scanner(source);
     std::vector<Token> tokens = scanner.scan_tokens();
 
@@ -41,12 +43,23 @@ void run(std::string& source) {
     }
 }
 
+void run_parse(std::string& source) {
+    Scanner scanner(source);
+    std::vector<Token> tokens = scanner.scan_tokens();
+    Parser parser(tokens);
+    AstPrinter* printer = new AstPrinter();
+
+    Expr* expression = parser.parse();
+    std::cout << printer->print(*expression);
+}
+
 void run_file(const std::string& command, const std::string& path) {
     if (command == "tokenize") {
         std::string file_contents = read_file_contents(path);
-        run(file_contents);
+        run_tokenize(file_contents);
     } else if (command == "parse") {
-        /* TODO */
+        std::string file_contents = read_file_contents(path);
+        run_parse(file_contents);
     } else {
         std::cerr << "Unknown command: " << command << std::endl;
     }
@@ -59,7 +72,7 @@ void run_prompt() {
         std::cout << "> ";
         std::cin >> line;
         if (line == "") { break; }
-        run(line);
+        run_parse(line);
     }
 }
 
