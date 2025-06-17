@@ -19,8 +19,6 @@ std::ostream& operator<<(std::ostream& os, const Token& token) {
         } else {
             os << token.lexeme;
         }
-    } else if (token.type == STRING) {
-        os << "\"" << token.literal << "\"";
     } else {
         os << token.literal;
     }

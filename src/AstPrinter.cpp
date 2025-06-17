@@ -34,7 +34,7 @@ std::string AstPrinter::visitLiteralExpr(const Literal& expr)
         }
         return ss.str();
     } catch (const std::invalid_argument&) {
-        return "\"" + std::string(expr.value) + "\"";
+        return std::string(expr.value);
     }
 }
 
