@@ -21,6 +21,9 @@ def define_ast(output_dir : str, base_name : str, types : List[str]):
     path : str = os.path.join(os.getcwd(), output_dir, base_name + ".hpp")
     f : TextIOWrapper = open(path, "x")
 
+    # Pragma
+    f.write('#pragma once\n')
+
     # Includes
     f.write('#include "Token.hpp"\n')
     f.write('#include <string_view>\n')
