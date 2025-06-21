@@ -42,10 +42,10 @@ public:
 
 class Literal : public Expr {
 public:
-	Literal(std::string_view value) : value(value) {}
+	Literal(std::variant<std::string_view, float> value) : value(value) {}
 	std::string accept(Visitor& visitor) const override { return visitor.visitLiteralExpr(*this); }
 
-	std::string_view value;
+	std::variant<std::string_view, float> value;
 };
 
 class Unary : public Expr {

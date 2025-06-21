@@ -75,7 +75,7 @@ void Scanner::add_token(TokenType type) {
     this->add_token(type, std::string_view());
 }
 
-void Scanner::add_token(TokenType type, std::string_view literal) {
+void Scanner::add_token(TokenType type, std::variant<std::string_view, float> literal) {
     std::string_view text = std::string_view(this->source).substr(start, current - start);
     this->tokens.push_back(Token(type, text, literal, line));
 }
@@ -126,7 +126,7 @@ void Scanner::number() {
         while(this->is_digit(this->peek())) this->advance();
     }
 
-    this->add_token(TokenType::NUMBER, std::string_view(this->source).substr(this->start, this->current - this->start));
+    this->add_token(TokenType::NUMBER, std::stof(this->source.substr(this->start, this->current - this->start)));
 }
 
 void Scanner::identifier() {

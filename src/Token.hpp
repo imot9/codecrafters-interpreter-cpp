@@ -7,11 +7,11 @@
 
 class Token {
 public:
-    Token(TokenType, std::string_view, std::string_view, int);
+    Token(TokenType, std::string_view, std::variant<std::string_view, float>, int);
     friend std::ostream& operator<<(std::ostream& os, const Token& token);
 
     TokenType type;
     std::string_view lexeme;
-    std::string_view literal;
+    std::variant<std::string_view, float> literal;
     int line;
 };

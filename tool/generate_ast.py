@@ -3,6 +3,10 @@ import os
 from typing import List
 from io import TextIOWrapper
 
+TYPE_LUT = {
+    "!!variant_string_view-float" : "std::variant<std::string_view, float>"
+}
+
 def main():
     if len(sys.argv) != 2:
         print("Usage: python3 generate_ast <output_dir>")
@@ -11,7 +15,7 @@ def main():
     types : List[str] = [ 
             "Binary   : Expr* left, Token* op, Expr* right",
             "Grouping : Expr* expression",
-            "Literal  : std::string_view value",
+            "Literal  : !!variant_string_view-float value", # std::variant<std::string_view, float> kind of messes up the splitting, will subst. later
             "Unary    : Token* op, Expr* right"
         ]
 
@@ -48,8 +52,8 @@ def define_ast(output_dir : str, base_name : str, types : List[str]):
 
     # AST classes
     for _type in types:
-        class_name : str = _type.split(":", 1)[0].strip()
-        fields : str = _type.split(":", 1)[1].strip()
+        class_name : str = _type.split(":")[0].strip()
+        fields : str = _type.split(":")[1].strip()
         define_type(f, class_name, base_name, fields)
 
     f.close()
@@ -67,6 +71,12 @@ def define_type(f : TextIOWrapper, class_name : str, base_name : str, fields : s
     f.write("\t{}(".format(class_name))
     for field_num, field in enumerate(fields_list):
         field_type, field_name = field.strip().split(" ")
+
+        # Types containing spaces would break the split, so substitute them here
+        if field_type.startswith("!!"):
+            field_type : str = TYPE_LUT[field_type]
+            field_type.strip("!!")
+
         f.write("{} {}".format(field_type, field_name))
 
         if field_num != len(fields_list) - 1:
@@ -95,6 +105,11 @@ def define_type(f : TextIOWrapper, class_name : str, base_name : str, fields : s
     # Variables
     for field in fields_list:
         field_type, field_name = field.strip().split(" ")
+
+        if field_type.startswith("!!"):
+            field_type : str = TYPE_LUT[field_type]
+            field_type.strip("!!")
+
         f.write("\t{} {};\n".format(field_type, field_name))
 
     # Class - close

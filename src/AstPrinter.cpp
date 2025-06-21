@@ -20,22 +20,22 @@ std::string AstPrinter::visitGroupingExpr(const Grouping& expr)
 
 std::string AstPrinter::visitLiteralExpr(const Literal& expr)
 {
-    if (expr.value.empty()) {
-        return "nil";
-    }
-    
-    try {
-        float num = std::stof(std::string(expr.value));
-        std::stringstream ss;
-        if (num == std::floor(num)) {
-            ss << std::fixed << std::setprecision(1) << num;
-        } else {
-            ss << expr.value;
+    std::ostringstream ss;
+
+    std::visit([&ss](auto&& arg) {
+        using T = std::decay_t<decltype(arg)>;
+        if constexpr (std::is_same_v<T, float>) {
+            ss << arg;
+        } else if constexpr (std::is_same_v<T, std::string_view>) {
+            if (arg.empty()) {
+                ss << "nil";
+            } else {
+                ss << std::string(arg);
+            }
         }
-        return ss.str();
-    } catch (const std::invalid_argument&) {
-        return std::string(expr.value);
-    }
+    }, expr.value);
+
+    return ss.str();
 }
 
 std::string AstPrinter::visitUnaryExpr(const Unary& expr)

@@ -4,35 +4,27 @@
 
 bool all_zero(std::string_view, size_t);
 
-Token::Token(TokenType type, std::string_view lexeme, std::string_view literal, int line)
+Token::Token(TokenType type, std::string_view lexeme, std::variant<std::string_view, float> literal, int line)
     : type(type), lexeme(lexeme), literal(literal), line(line) {}
+
 
 std::ostream& operator<<(std::ostream& os, const Token& token) {
     os << token_type_to_string(token.type) << " " << token.lexeme << " ";
-    if (token.literal.empty()) {
-        os << "null";
-    } else if (token.type == NUMBER) {
-        size_t dot_pos = token.lexeme.find('.');
-        if (dot_pos == std::string_view::npos || all_zero(token.lexeme, dot_pos)) {
-            float value = std::stof(std::string(token.lexeme));
-            os << std::fixed << std::setprecision(1) << value;
-        } else {
-            os << token.lexeme;
+
+    std::visit([&os, &token](auto&& arg) {
+        using T = std::decay_t<decltype(arg)>;
+        if constexpr (std::is_same_v<T, float>) {
+            std::ostringstream ss;
+            os << arg;
+            os << ss.str();
+        } else if constexpr (std::is_same_v<T, std::string_view>) {
+            if (arg.empty()) {
+                os << "null";
+            } else {
+                os << std::string(arg);
+            }
         }
-    } else {
-        os << token.literal;
-    }
+    }, token.literal);
 
     return os;
-}
-
-bool all_zero(std::string_view lexeme, size_t decimal) {
-    bool all_zero = true;
-    for (size_t i = decimal + 1; i < lexeme.size(); ++i) {
-        if (lexeme[i] != '0') {
-            all_zero = false;
-            break;
-        }
-    }
-    return all_zero;
 }
